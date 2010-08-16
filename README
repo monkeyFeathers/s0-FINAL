@@ -1,0 +1,83 @@
+I am pleased to announce the RMU Zero Session Final Exam, which is one
+of the requirements for gaining alumni status. Please read the details
+below carefully, and ask any questions that come to mind.
+
+I have released this problem a tiny bit early so that we can use some
+time during tomorrow's meeting to discuss any questions that might come up.
+
+== Your Task
+
+You will be implementing the basic rules of the board game Go.
+
+http://en.wikipedia.org/wiki/Go_%28game%29#Basic_rules
+
+You are expected to implement a board which applies the rules of the
+game when new stones are placed.   Be sure to account for the suicide
+and ko rules (the simple ko rule is sufficient, implementing super ko is
+not required).  Make sure that it is possible for PASS to be a valid move.
+
+You are not expected to make a user interface for the game beyond that
+which is needed for testing and evaluation purposes.  You are, however,
+expected to have full test coverage for all the behaviors described by
+the rules, and documentation as well as examples that exercise the
+system as a whole are strongly encouraged.
+
+== Deadline and Submission Guidelines
+
+All submissions are due no later than 00:00 UTC Monday August 23rd. This
+is the very beginning of Monday, not the very end!
+
+You may submit your solution at any time between now and then, and may
+either provide me a link to a private git repository you've given me
+access to, or a private gist with all of the files for your submission.
+
+Do not share your work on this final exam with anyone else until after I
+have reviewed all submissions and announced that submissions can be made
+public.
+
+Send your submission via private email to gregory.t.brown@gmail.com with
+the subject: RMU Zero Session Final Exam Submission
+
+Include the link to your gist or private git repository along with the
+amount of time it took you to complete the assignment (see Tracking your
+time below).
+
+You will receive notification within 24 hours that your submission has
+been received, be sure to follow up if you do not receive this
+acknowledgement. Students who pass the final exam will be notified no
+later than August 29th.
+
+NOTE: I will review your submission only once, so make sure you're ready
+for your code to be reviewed before submitting!
+
+== Research Restrictions
+
+You may look at any resources you can find online about the game Go,
+but you may not look at any code (in Ruby or another language) that
+implements the rules of Go. This even includes code you have written
+yourself! If you already have familiarity with the problem, work from
+memory, otherwise, do not reference existing implementations.
+
+== Tracking your time
+
+I am asking that you run a timer while you work on this project, so that
+I can compare your performance with the other students in the session.
+Whether or not your solution is accepted is not dependent on this
+baseline, but it will help me with future RMU planning.
+
+Do not spend more than 6 hours working on this assignment without
+submitting your solution. You are welcome to continue working on the
+problem afterwards, and I'll be happy to review your progress, but for
+the portion you'll be evaluated on, please limit yourself to the
+proposed time frame. This helps make my evaluations more accurate.
+
+Don't worry if your solution is incomplete, but try to plan your time
+wisely so that what you submit is functional and cleaned up, even if it
+is missing some features. If you must make cuts, build half a product,
+not a half-ass product. ;-)
+
+== Questions
+
+If you have any questions, please ask me here on the mailing list,
+or in the session IRC channel. I have played quite a bit of Go, so I
+should be able to answer any questions you might have about the rules.
