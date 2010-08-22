@@ -1,22 +1,24 @@
 module Go
   class Point
     
-    attr_reader :stone, :position
+    attr_accessor :ko
+    attr_reader :stone, :position, :x, :y
     
     def initialize(x,y)
       @position = [x,y]
+      @x,@y = @position[0],@position[1]
+      @ko = false
     end
     
     
     def stone=(stone)
       if @stone
-        raise Go::MoveError, "Point at #{@position[0]},#{@position[1]}  already occupied by #{@stone.to_s}."
+        raise Go::MoveError, "Point at #{@x}, #{@y} already occupied by #{@stone.to_s}."
       end
-      unless stone == :black or stone == :white
-        raise ArgumentError, "Improper stone value: #{stone}; Stones must be :black or :white"
-      else
-        @stone = stone
+      unless stone.class == Go::Stone
+        raise ArgumentError, "Can only place Go::Stones in Go::Points"
       end
+      @stone = stone
     end
     
     def empty
@@ -24,7 +26,15 @@ module Go
     end
     
     def empty?
-      !@stone
+      if @stone == nil
+        true
+      else
+        false
+      end
+    end
+    
+    def ko?
+      !!@ko
     end
     
   end

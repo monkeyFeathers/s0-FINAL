@@ -59,13 +59,11 @@ module Go
         
         
         test "stone has liberties" do
-          stone = @board.stones(5,5)
-          assert_equal [[,],[,],[,],[,]], stone.liberties
         end
         
       end # single stone context
       
-      context "chains" do
+      context "groups" do
         setup do
          @board = Go::Board.new
          [[6,5], [5,6], [5,5]].each do |point|
@@ -73,8 +71,10 @@ module Go
          end
         end
             
-        test "chains" do
-          assert_equal 1, @board.chains.length
+        test "board knows about its groups" do
+          assert_equal "", @board.groups.first
+          assert_equal "", @board.groups
+          assert_equal 1, @board.groups.length
         end
         
       end # strings context
