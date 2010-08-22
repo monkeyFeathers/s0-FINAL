@@ -38,7 +38,7 @@ module Go
       
       test "single occupied points" do
         assert_equal 1, @board.stones.length
-        assert_equal [5,5], @board.stones.first.position
+        assert_equal [5,5], @board.stones.first.point.position
       end
       
       test "cannot place stone on occupied points" do
@@ -72,17 +72,10 @@ module Go
         end
             
         test "board knows about its groups" do
-          assert_equal "", @board.groups.first
-          assert_equal "", @board.groups
           assert_equal 1, @board.groups.length
         end
-        
-      end # strings context
-      
-    end # about liberties and atari
-    
-    describe "board knows about eternity" do
-    end # about eternity
+      end
+    end
   
   end
 end

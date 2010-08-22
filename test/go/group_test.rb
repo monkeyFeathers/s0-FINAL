@@ -20,7 +20,6 @@ module Go
     
     test "a stone knows what group it's in" do
       assert_equal @group, @stone.group
-      assert_equal "", @group
     end
     describe "multi stone group" do
       setup do
@@ -40,24 +39,14 @@ module Go
       end
       
       test "groups know about their liberties" do
-        h = {}
-        h[1] = @stone.liberties
-        h[2] = @stone2.liberties
-        assert_equal "", h
-        @stone.occupy
-        @stone2.occupy
-        assert_equal [@point3.position,@point4.position], @group.liberties[0].position,@group.liberties[1].position
-      end
-      
-      test "thing" do
-        h = {}
-        @stone2.occupy
-        h[1] = @stone.liberties
-        h[2] = @stone2.liberties
-        assert_equal "", h
+        assert @group.liberties.include?(@point3)
       end
     
       test "groups know when they're going into atari" do
+        @point3.stone = Go::Stone.new(:white,@point3,nil)
+        # @point4.stone = Go::Stone.new(:white,@point4,nil)
+        assert_equal 1, @group.liberties.length
+        assert @group.in_atari?
       end
     
       test "groups know when they're captured" do

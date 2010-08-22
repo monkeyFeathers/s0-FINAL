@@ -2,7 +2,7 @@ module Go
   
   class Board
     
-    attr_accessor :stones, :occupied_points, :points, :chains, :groups
+    attr_accessor :stones, :occupied_points, :points, :groups
     
     def initialize(*dimensions)
       # ensure proper dimensions for game
@@ -21,6 +21,7 @@ module Go
             warn "Go usually played on 9x9, 13x13, or 19x19 board"
           end 
           build_grid dimensions.first, dimensions.first
+          @dimensions = dimensions.first
         end
       end
       @stones = []
@@ -30,101 +31,127 @@ module Go
     end
     
     def place_stone(player, *position)
-      position = position.flatten
-      
-      ###################################################################################
-      #check if move is exists on board
-      
-      # check that position is valid with both x and y coordinates
-      unless position.length == 2
-        raise ArgumentError, "require x,y to place stone"
+      # check that move is valid
+      position.flatten!
+      # x, y?
+      x,y = "",""
+      case position.length
+      when 2
+        x, y = position[0],position[1]
+        [x,y].each do |c|
+          unless c > 0 and c <= @dimensions
+            raise Go::MoveError, "move (#{x}, #{y}) not on board"
+          end
+        end
+      else
+        raise Go::MoveError, "need (x, y) to move"
       end
       
-      # make sure position is on the board
-      x = position.first
-      y = position.last
-      [x, y].each do |v|
-        unless v > 0 and v < @dimensions
-          raise Go::MoveError, "You tried to place a stone outside of the board dimensions of #{@dimensions},#{@dimensions}"
+      # get point and adjacent points
+      
+      point = ""
+      @points.each do |p|
+        if p.position == [x,y]
+          point = p
         end
       end
       
-      ###############################################################################
-      # find point at position indicated and check for liberties and other stones
-      point = ""
-      liberties = []
-      friends = []
-      enemies = []
-      @points.each do |p|
-        if p.position == position
-          point = p
-          # get liberties and add stone to stone collection
-          adjacent_points(point).each do |adjacent_point|
-            if adjacent_point.empty?
-              liberties << adjacent_point 
-            elsif adjacent_point.stone == player
-              friends << adjacent_point
-            else
-              enemies << adjacent_point
-            end
+      unless point.class == Go::Point
+        raise Go::MoveError, "couldn't find point"
+      end
+      
+      # ko?
+      if point.ko?
+        raise Go::MoveError, "Move is invalid due to Ko"
+      end
+      
+      adjacents = adjacent_points point
+      
+      # separate adjacent enemies and friends and liberties
+      friendly_points = []
+      enemy_points = []
+      free_points = []
+      adjacents.each do |pnt|
+        case pnt.stone
+        when nil
+          free_points << pnt
+        else
+          if pnt.stone.color == player
+            friendly_points << pnt
+          else
+            enemy_points << pnt
           end
         end
       end
-        
-      # ready stone
-      unless point.ko?
-        stone = Go::Stone.new(player, point, liberties)
-        @points.each {|p| p.ko = false}
-      else
-        raise Go::MoveError, "Placing a stone at #{@x}, #{y} violates ko"
-      end
       
-      # add stone to friendly group(s)
-      group = ""
-      case friends.length
-      when 0
-        group = Go::Group.new(stone)
-      when 1
-        group = friends.first.group
-        group.stones.push stone
-      else
-        stones = Array.new
-        stones << stone
-        friends.each do |friend|
-          stones << friend.group.stones
-          @groups.delete friend.group
-        end
-        group = Go::Group.new(stones)
-      end
-      #check for captures
-      captives = []
-      if enemies
-        enemies.each do |enemy|
-          if enemy.stone.group.in_atari?
-            if point == enemy.group.liberties.last
-              captives << enemy.group
-            end
+      # would stone placement capture any enemy groups?
+      
+      potential_captives = []
+      enemy_points.each do |enemy|
+        if enemy.stone.group.in_atari?
+          if point == enemy.stone.group.liberty.last
+            potential_captives << enemy.stone.group
           end
         end
       end
       
       # check for suicide
-      if stone.in_atari? or stone.group.in_atari?
-        if stone.liberties.last == point or group.liberties.last == point
-          unless captives.length > 0
-            raise raise Go::MoveError, "No suicides!"
+      if potential_captives.empty?
+        if free_points.empty?
+        # check friendly group 
+          if friendly_points.empty?
+            raise Go::MoveError, "Move would result in suicide"
+          else
+            friendly_points.each do |friend|
+              if friend.group.in_atari?
+                if friend.group.liberties.last == point
+                  raise Go::MoveError, "Move would result in suicide"
+                end
+              end
+            end
           end
         end
       end
       
-      # make captures place
-      captives.each do |enemy_group|
-        enemy_group.captured
+      # figure out the group it belongs to
+      group = ""
+      case friendly_points.length
+      when 0
+        group = lambda do |s| 
+          g = Go::Group.new s
+          @groups << g
+        end
+          
+      when 1
+        group = friendly_points.first.group
+      else
+        # find out if friends in same group or different ones
+        grps = []
+        friendly_points.each {|f| grps << f.stone.group}
+        if grps.uniq.length == 1
+          group = grps.first
+        else
+          stns = []
+          grps.each do |grp|
+            stns << grp.stones
+            @groups.delete grp
+          end
+          g = Go::Group.new stns
+          @groups << g
+          group = lambda{|s| g.add s} 
+        end
       end
       
-      point.stone = stone
+      # place stone add to group and make captures
+      stone = Go::Stone.new(player, point, free_points)
       @stones << stone
-      @groups << group
+      stone.occupy
+      group.call stone
+      
+      potential_captives.each do |p|
+        p.stone.group.captured
+      end
+      
     end
     
     def adjacent_points(point)

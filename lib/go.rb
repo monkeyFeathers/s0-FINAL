@@ -6,4 +6,21 @@ require 'go/group'
 require 'go/board'
 require 'go/game'
 
+module Go
+  
+  
+  class BoardError < StandardError
+  end
+  
+  class MoveError < StandardError
+  end
+  
+  class JustASoldierError < StandardError
+  end
+  
+  class GameOverError < StandardError
+  end
+
+end
+
 
